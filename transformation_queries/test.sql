@@ -1,0 +1,1 @@
+select * from contact_info_raw

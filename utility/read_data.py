@@ -1,22 +1,7 @@
-from utility.general_utility import read_schema, fetch_file_path
+from utility.general_utility import (
+    read_schema, fetch_file_path, flatten, read_config, fetch_transformation_query_path)
 
 
-# def read_file(type,path, spark):
-#
-#     if type == 'csv':
-#         df= spark.read.format('csv').load(path)
-#     elif type == 'json':
-#         df = spark.read.format('json').load(path)
-#     elif type == 'parquet':
-#         df = spark.read.format('parquet').load(path)
-#     elif type == 'avro':
-#         df = spark.read.format('avro').load(path)
-#     elif type == 'txt':
-#         df = spark.read.format('text').load(path)
-#     else:
-#         print("provided type is not handled")
-#
-#     return df
 
 def read_file(type,
               file_name,
@@ -35,7 +20,6 @@ def read_file(type,
                 print(schema_json)
                 print(path)
                 df = spark.read.schema(schema_json).option("header", True).option("delimiter", ",").csv(path)
-                df.show()
             else:
                 df = (spark.read.option("inferSchema", True).
                       option("header", True).option("delimiter", ",").csv(path))
@@ -65,3 +49,43 @@ def read_file(type,
 
     except Exception as e:
         df = None
+
+def read_db(spark,
+            table: str,
+            database: str,
+            query_path: str,
+            row):
+    try:
+        config_data = read_config(database)
+        if query_path != 'NOT APPL':
+            sql_query = fetch_transformation_query_path(query_path)
+            print(sql_query)
+            print(config_data)
+            df = spark.read.format("jdbc"). \
+                option("url", config_data['url']). \
+                option("user", config_data['user']). \
+                option("password", config_data['password']). \
+                option("query", sql_query). \
+                option("driver", config_data['driver']).load()
+        else:
+            df = spark.read.format("jdbc"). \
+                option("url", config_data['jdbc_url']). \
+                option("user", config_data['user']). \
+                option("password", config_data['password']). \
+                option("dbtable", table). \
+                option("driver", config_data['driver']).load()
+        exclude_cols = row['exclude_columns'].split(',')#--> ['batch_date','create_date','update_date','create_user','update_user']
+        df = df.drop(*exclude_cols)
+
+        # return df.drop('batch_date','create_date','update_date','create_user','update_user')
+        return df
+
+    except FileNotFoundError as e:
+        print(f"File not found: {e.filename}")
+        return None
+    except KeyError as e:
+        print(f"Key error: {e}")
+        return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None

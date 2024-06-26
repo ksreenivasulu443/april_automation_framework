@@ -37,8 +37,10 @@ for row in validations:
     print("target type", row['target_type'])
     print("target", row['target'])
     print("source_schema_path", row['source_schema_path'])
-    source = read_file(row['source_type'], row['source'], spark)
-    target = read_file(row['target_type'], row['target'], spark)
+    source = read_file()
+    target = read_file()
+
+
 
 
 

@@ -18,15 +18,15 @@ from utility.general_utility import read_schema, fetch_file_path
 #
 #     return df
 
-def read_file(type: str,
-              path: str,
-              spark: SparkSession,
+def read_file(type,
+              file_name,
+              spark,
               row,
-              schema: str = 'NOT APPL',
-              multiline: bool = True,
+              schema='NOT APPL',
+              multiline=True,
               ):
     try:
-        path = fetch_file_path(path)
+        path = fetch_file_path(file_name)
         type = type.lower()
         if type == 'csv':
             if schema != 'NOT APPL':
@@ -65,4 +65,3 @@ def read_file(type: str,
 
     except Exception as e:
         df = None
-

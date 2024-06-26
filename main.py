@@ -4,6 +4,7 @@ from pyspark.sql.functions import collect_set
 import os
 
 from utility.read_data import read_file, read_db
+from utility.validation_library import count_check
 
 project_path = os.getcwd()
 
@@ -76,5 +77,9 @@ for row in validations:
                            schema=row['target_schema_path'])
     source.show()
     target.show()
+    for validation in row['validation_Type']:
+        validation = validation.lower()
+        if validation == 'count_check':
+            count_check(source, target,row)
 
 

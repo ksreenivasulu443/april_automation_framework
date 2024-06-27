@@ -4,7 +4,7 @@ from pyspark.sql.functions import collect_set
 import os
 
 from utility.read_data import read_file, read_db
-from utility.validation_library import count_check
+from utility.validation_library import count_check, duplicate_check
 
 project_path = os.getcwd()
 
@@ -18,6 +18,19 @@ spark = SparkSession.builder.master("local[5]") \
     .config("spark.driver.extraClassPath", jar_path) \
     .config("spark.executor.extraClassPath", jar_path) \
     .getOrCreate()
+
+Out = {
+    "validation_Type": [],
+    "Source_name": [],
+    "target_name": [],
+    "Number_of_source_Records": [],
+    "Number_of_target_Records": [],
+    "Number_of_failed_Records": [],
+    "column": [],
+    "Status": [],
+    "source_type": [],
+    "target_type": []
+}
 
 test_cases = pd.read_excel("/Users/harish/PycharmProjects/april_automation_framework/config/Master_Test_Template.xlsx")
 
@@ -77,9 +90,27 @@ for row in validations:
                            schema=row['target_schema_path'])
     source.show()
     target.show()
+    print(row['validation_Type'])
     for validation in row['validation_Type']:
-        validation = validation.lower()
+        print(validation)
         if validation == 'count_check':
-            count_check(source, target,row)
+            count_check(source, target,row,Out)
+        elif validation == 'duplicate':
+            duplicate_check(target,row['key_col_list'],row,Out)
+        elif validation == 'data_compare':pass
+            #call data compare function
+        elif validation == 'schema_check':pass
+            #call schema check function
+        elif validation == 'null_check':pass
+            #call null check function
+        else:
+            print("validation is not defined")
 
 
+print(Out)
+
+summary = pd.DataFrame(Out)
+
+print(summary)
+
+summary.to_csv("summary.csv")

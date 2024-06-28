@@ -4,7 +4,8 @@ from pyspark.sql.functions import collect_set
 import os
 
 from utility.read_data import read_file, read_db
-from utility.validation_library import count_check, duplicate_check
+from utility.validation_library import count_check, duplicate_check, records_present_only_in_source, \
+    records_present_only_in_target
 
 project_path = os.getcwd()
 
@@ -95,6 +96,10 @@ for row in validations:
         print(validation)
         if validation == 'count_check':
             count_check(source, target,row,Out)
+        elif validation == 'records_present_only_in_source':
+            records_present_only_in_source(source, target, row['key_col_list'], Out, row)
+        elif validation == 'records_present_only_target':
+            records_present_only_in_target(source, target, row['key_col_list'], Out, row)
         elif validation == 'duplicate':
             duplicate_check(target,row['key_col_list'],row,Out)
         elif validation == 'data_compare':pass

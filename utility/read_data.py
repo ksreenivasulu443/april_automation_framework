@@ -89,3 +89,9 @@ def read_db(spark,
     except Exception as e:
         print(f"An error occurred: {e}")
         return None
+
+# def kafka_read(spark):
+#
+#     df = spark.read.format('stream').
+#
+#     return df

@@ -1,4 +1,5 @@
-from pyspark.sql.functions import count,col, when,upper, isnan
+from pyspark.sql.functions import (
+    count,col, when,upper, isnan,lit,sha2,concat)
 def count_check(source, target,row,Out):
     src_cnt = source.count()
     tgt_cnt = target.count()
@@ -153,6 +154,60 @@ def null_value_check(target, Null_columns, Out, row):
                          Number_of_failed_Records=0, column=column, Status='PASS',
                          source_type='NOT APPL',
                          target_type=row['target_type'], Out=Out)
+
+source, target
+
+def data_compare(source, target, keycolumn, Out, row):
+    columns = keycolumn
+    keycolumn = keycolumn.split(",")
+    keycolumn = [i.lower() for i in keycolumn]
+
+
+    columnList = source.columns
+    smt = source.exceptAll(target).withColumn("datafrom", lit("source"))
+    tms = target.exceptAll(source).withColumn("datafrom", lit("target"))
+    failed = smt.union(tms)
+
+
+    failed_count = failed.count()
+    target_count = target.count()
+    source_count = source.count()
+    if failed_count > 0:
+        write_output(validation_Type="data_compare", source=row['source'], target=row['target'],
+                     Number_of_source_Records=source_count, Number_of_target_Records=target_count,
+                     Number_of_failed_Records=failed_count, column=columns, Status='FAIL',
+                     source_type=row['source_type'],
+                     target_type=row['target_type'], Out=Out)
+    else:
+        write_output(validation_Type="data_compare", source=row['source'], target=row['target'],
+                     Number_of_source_Records=source_count, Number_of_target_Records=target_count,
+                     Number_of_failed_Records=0, column=columns, Status='PASS',
+                     source_type=row['source_type'],
+                     target_type=row['target_type'], Out=Out)
+
+
+    if failed.count() > 0:
+        #failed2 = failed.sample(0.01)
+
+        failed2 = failed.select(keycolumn).distinct().withColumn("hash_key",sha2(concat(*[col(c) for c in keycolumn]), 256))
+        source = source.withColumn("hash_key", sha2(concat(*[col(c) for c in keycolumn]), 256)).\
+            join(failed2,["hash_key"],how='left_semi').drop('hash_key')
+        target = target.withColumn("hash_key", sha2(concat(*[col(c) for c in keycolumn]), 256)). \
+        join(failed2,["hash_key"],how='left_semi').drop('hash_key')
+
+        for column in columnList:
+            print(column.lower())
+            if column.lower() not in keycolumn:
+                keycolumn.append(column)
+                temp_source = source.select(keycolumn).withColumnRenamed(column, "source_" + column)
+                temp_target = target.select(keycolumn).withColumnRenamed(column, "target_" + column)
+                keycolumn.remove(column)
+                temp_join = temp_source.join(temp_target, keycolumn, how='full_outer')
+                temp_join.withColumn("comparison", when(col('source_' + column) == col("target_" + column),
+                                                        "True").otherwise("False")).filter(
+                    f"comparison == False and source_{column} is not null and target_{column} is not null").show()
+
+
 
 
 def write_output(validation_Type, source, target, Number_of_source_Records, Number_of_target_Records,

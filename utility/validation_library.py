@@ -1,5 +1,5 @@
 from pyspark.sql.functions import (
-    count,col, when,upper, isnan,lit,sha2,concat)
+    count,col, when,upper, isnan,lit,sha2,concat,regexp_extract)
 def count_check(source, target,row,Out):
     src_cnt = source.count()
     tgt_cnt = target.count()
@@ -155,7 +155,7 @@ def null_value_check(target, Null_columns, Out, row):
                          source_type='NOT APPL',
                          target_type=row['target_type'], Out=Out)
 
-source, target
+
 
 def data_compare(source, target, keycolumn, Out, row):
     columns = keycolumn
@@ -207,7 +207,107 @@ def data_compare(source, target, keycolumn, Out, row):
                                                         "True").otherwise("False")).filter(
                     f"comparison == False and source_{column} is not null and target_{column} is not null").show()
 
+def schema_check(source, target, spark, Out, row):
 
+    source.createOrReplaceTempView("source")
+    target.createOrReplaceTempView("target")
+    source_schema = spark.sql("describe source")
+    source_schema.createOrReplaceTempView("source_schema")
+    target_schema = spark.sql("describe target")
+    target_schema.createOrReplaceTempView("target_schema")
+
+    failed = spark.sql('''select * from (select lower(a.col_name) source_col_name,lower(b.col_name) target_col_name, a.data_type as source_data_type, b.data_type as target_data_type, 
+    case when a.data_type=b.data_type then "pass" else "fail" end status
+    from source_schema a full join target_schema b on lower(a.col_name)=lower(b.col_name)) where status='fail' ''')
+    source_count = source_schema.count()
+    target_count = target_schema.count()
+    failed_count = failed.count()
+    failed.show()
+    if failed_count > 0:
+        write_output(validation_Type="schema_check", source=row['source'], target=row['target'],
+                     Number_of_source_Records=source_count, Number_of_target_Records=target_count,
+                     Number_of_failed_Records=failed_count, column="NOT APP", Status='FAIL',
+                     source_type=row['source_type'],
+                     target_type=row['target_type'], Out=Out)
+    else:
+        write_output(validation_Type="schema_check", source=row['source'], target=row['target'],
+                     Number_of_source_Records=source_count, Number_of_target_Records=target_count,
+                     Number_of_failed_Records=0, column="NOT APP", Status='PASS',
+                     source_type=row['source_type'],
+                     target_type=row['target_type'], Out=Out)
+
+
+
+def name_check(target, column, Out, row, pattern=None):
+    pattern = "^[a-zA-Z]"
+
+    # Add a new column 'is_valid' indicating if the name contains only alphabetic characters
+    df = target.withColumn("is_valid", regexp_extract(col(column), pattern, 0) != "")
+
+    target_count = target.count()
+    failed = df.filter('is_valid = False ')
+    failed.show()
+    failed_count = failed.count()
+    if failed_count > 0:
+        write_output(validation_Type="name_check", source=row['source'], target=row['target'],
+                     Number_of_source_Records='NOT APPL', Number_of_target_Records=target_count,
+                     Number_of_failed_Records=failed_count, column=column, Status='FAIL',
+                     source_type='NOT APPL',
+                     target_type=row['target_type'], Out=Out)
+    else:
+        write_output(validation_Type="name_check", source=row['source'], target=row['target'],
+                     Number_of_source_Records='NOT APPL', Number_of_target_Records=target_count,
+                     Number_of_failed_Records=0, column=column, Status='PASS',
+                     source_type='NOT APPL',
+                     target_type=row['target_type'], Out=Out)
+
+
+
+def column_range_check(target, column, min_value, max_value, validation, row, Out):
+    print("*" * 50)
+    print(f"{validation} has started")
+    print("*" * 50)
+    failed = target.filter(f'{column} not between {min_value} and {max_value}')
+    failed.show()
+    failed_count = failed.count()
+    target_count = target.count()
+    if failed_count > 0:
+        write_output(validation_Type=validation, source=row['source'], target=row['target'],
+                     Number_of_source_Records='NOT APPL', Number_of_target_Records=target_count,
+                     Number_of_failed_Records=failed_count, column=column, Status='FAIL',
+                     source_type='NOT APPL',
+                     target_type=row['target_type'], Out=Out)
+    else:
+        write_output(validation_Type=validation, source=row['source'], target=row['target'],
+                     Number_of_source_Records='NOT APPL', Number_of_target_Records=target_count,
+                     Number_of_failed_Records=0, column=column, Status='PASS',
+                     source_type='NOT APPL',
+                     target_type=row['target_type'], Out=Out)
+    print("*" * 50)
+    print(f"{validation} has been completed")
+    print("*" * 50)
+
+
+
+def column_value_reference_check(target, column, expected_values, Out, row):
+
+    expected_values = expected_values.split(",")
+    failed = target.withColumn("is_present", col(column).isin(expected_values)).filter('is_present = False')
+    failed.show()
+    failed_count = failed.count()
+    target_count = target.count()
+    if failed_count > 0:
+        write_output(validation_Type="column_value_reference_check", source=row['source'], target=row['target'],
+                     Number_of_source_Records='NOT APPL', Number_of_target_Records=target_count,
+                     Number_of_failed_Records=failed_count, column=column, Status='FAIL',
+                     source_type='NOT APPL',
+                     target_type=row['target_type'], Out=Out)
+    else:
+        write_output(validation_Type="column_value_reference_check", source=row['source'], target=row['target'],
+                     Number_of_source_Records='NOT APPL', Number_of_target_Records=target_count,
+                     Number_of_failed_Records=0, column=column, Status='PASS',
+                     source_type='NOT APPL',
+                     target_type=row['target_type'], Out=Out)
 
 
 def write_output(validation_Type, source, target, Number_of_source_Records, Number_of_target_Records,

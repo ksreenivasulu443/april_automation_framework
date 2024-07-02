@@ -1,5 +1,5 @@
 ,validation_Type,Source_name,target_name,Number_of_source_Records,Number_of_target_Records,Number_of_failed_Records,column,Status,source_type,target_type
-0,count_check,contact_info_raw,Contact_info_t.csv,10,3,7,identifier,Fail,table,csv
+0,count_check,contact_info_raw,Contact_info_t.csv,1018,3,1015,identifier,Fail,table,csv
 1,duplicate,NOT APPL,Contact_info_t.csv,NOT APPL,3,0,identifier,PASS,NOT APPL,csv
-2,records_present_only_in_source,contact_info_raw,Contact_info_t.csv,10,3,8,identifier,FAIL,table,csv
-3,records_present_only_in_target,contact_info_raw,Contact_info_t.csv,10,3,1,identifier,FAIL,table,csv
+2,records_present_only_in_source,contact_info_raw,Contact_info_t.csv,1018,3,1018,identifier,FAIL,table,csv
+3,records_present_only_in_target,contact_info_raw,Contact_info_t.csv,1018,3,3,identifier,FAIL,table,csv

@@ -5,7 +5,7 @@ import os
 
 from utility.read_data import read_file, read_db
 from utility.validation_library import count_check, duplicate_check, records_present_only_in_source, \
-    records_present_only_in_target
+    records_present_only_in_target,data_compare,schema_check,null_value_check,uniqueness_check,column_value_reference_check,column_range_check,name_check
 
 project_path = os.getcwd()
 
@@ -33,7 +33,7 @@ Out = {
     "target_type": []
 }
 
-test_cases = pd.read_excel("/Users/harish/PycharmProjects/april_automation_framework/config/Master_Test_Template.xlsx")
+test_cases = pd.read_excel(r"C:\Users\A4952\PycharmProjects\april_automation_framework\config\master_test_template.xlsx")
 
 print(test_cases)
 
@@ -75,7 +75,7 @@ for row in validations:
                            file_name=row['source'],
                            spark=spark,
                            row=row,
-                           schema=row['source_schema_path'])
+                           schema=row       ['source_schema_path'])
 
     if row['target_type'] == 'table':
         target = read_db(spark=spark,
@@ -102,12 +102,15 @@ for row in validations:
             records_present_only_in_target(source, target, row['key_col_list'], Out, row)
         elif validation == 'duplicate':
             duplicate_check(target,row['key_col_list'],row,Out)
-        elif validation == 'data_compare':pass
-            #call data compare function
-        elif validation == 'schema_check':pass
+        elif validation == 'data_compare':
+            data_compare(source, target, row['key_col_list'], Out, row)
+        elif validation == 'schema_check':
+            schema_check(source, target, spark, Out, row)
             #call schema check function
-        elif validation == 'null_check':pass
-            #call null check function
+        elif validation == 'null_check':
+            null_value_check(target, row['null_col_list'], Out, row)
+        elif validation == 'uniqueness_check':
+            uniqueness_check(target,row['unique_col_list'],Out, row)
         else:
             print("validation is not defined")
 

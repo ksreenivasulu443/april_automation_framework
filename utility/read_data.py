@@ -90,8 +90,40 @@ def read_db(spark,
         print(f"An error occurred: {e}")
         return None
 
-# def kafka_read(spark):
-#
-#     df = spark.read.format('stream').
-#
-#     return df
+def read_snowflake(spark,
+            table: str,
+            database: str,
+            query: str, row):
+    try:
+        config_data = read_config(database)
+        if query != 'NOT APPL':
+            with open(query, "r") as file:
+                sql_query = file.read()
+            print(sql_query)
+            print(config_data)
+            df = spark.read \
+                .format("jdbc") \
+                .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
+                .option("url", config_data['jdbc_url']) \
+                .option("query", sql_query) \
+                .load()
+        else:
+            df = spark.read \
+                .format("jdbc") \
+                .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
+                .option("url", config_data['jdbc_url']) \
+                .option("dbtable", table) \
+                .load()
+
+        exclude_cols = row['exclude_columns'].split(',')
+        return df.drop(*exclude_cols)
+    except FileNotFoundError as e:
+        print(f"File not found: {e.filename}")
+        return None
+    except KeyError as e:
+        print(f"Key error: {e}")
+        return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
+

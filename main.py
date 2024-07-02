@@ -11,8 +11,11 @@ project_path = os.getcwd()
 
 postgre_jar = project_path + "/jars/postgresql-42.2.5.jar"
 
+snow_jar = project_path + "/jars/snowflake-jdbc-3.14.3.jar"
+#oracle_jar = project_path + "/jars/ojdbc11.jar"
 
-jar_path = postgre_jar
+jar_path = snow_jar
+
 spark = SparkSession.builder.master("local[5]") \
     .appName("test") \
     .config("spark.jars", jar_path) \
@@ -33,7 +36,7 @@ Out = {
     "target_type": []
 }
 
-test_cases = pd.read_excel(r"C:\Users\A4952\PycharmProjects\april_automation_framework\config\master_test_template.xlsx")
+test_cases = pd.read_excel(r"C:\Users\A4952\PycharmProjects\april_automation_framework\config\master_test_template_project1.xlsx")
 
 print(test_cases)
 

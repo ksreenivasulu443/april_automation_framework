@@ -5,28 +5,9 @@
     "password": "Dharmavaram1@",
     "driver": "org.postgresql.Driver"
   },
-  "postgres_db_test": {
-    "jdbc_url": "jdbc:postgresql://localhost:5432/postgres",
-    "user": "postgres",
-    "password": "Dharmavaram1@",
-    "driver": "org.postgresql.Driver"
-  },
-  "postgres_db_dev": {
-    "url": "jdbc:postgresql://localhost:5432/postgres",
-    "user": "postgres",
-    "password": "Dharmavaram1@",
-    "driver": "org.postgresql.Driver"
-  },
-
   "snowflake_db": {
     "driver": "net.snowflake.client.jdbc.SnowflakeDriver",
     "jdbc_url" : "jdbc:snowflake://oborokf-kh65378.snowflakecomputing.com/?user=KSREENIVASULU&password=Dharmavaram1@&warehouse=COMPUTE_WH&db=ETL_AUTO&schema=CONTACT_INFO"
 
-  },
-  "oracle_db": {
-    "url": "jdbc:postgresql://localhost:5432/postgres",
-    "user": "postgres",
-    "password": "Dharmavaram1@",
-    "driver": "org.postgresql.Driver"
   }
 }

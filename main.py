@@ -36,7 +36,9 @@ Out = {
     "target_type": []
 }
 
-test_cases = pd.read_excel(r"C:\Users\A4952\PycharmProjects\april_automation_framework\config\master_test_template_project1.xlsx")
+template_path = project_path + '\config\master_test_template_project1.xlsx'
+
+test_cases = pd.read_excel(template_path)
 
 print(test_cases)
 

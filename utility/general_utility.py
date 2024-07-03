@@ -8,10 +8,10 @@ from pyspark.sql.functions import explode_outer, col
 
 given_path = os.path.abspath(os.path.dirname(__file__))
 
-print(given_path)
+#print(given_path)
 path = os.path.dirname(given_path)
 
-print(path)
+#print(path)
 
 def read_schema(schema_file_path):
     path = os.path.dirname(given_path) + '/schema/' +schema_file_path

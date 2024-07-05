@@ -35,7 +35,7 @@ batch_id = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
 # Load from File to DB raw table
 
-file_path = fetch_file_path('contact_info_20240702.csv')
+file_path = fetch_file_path('contact_info_20240703.csv')
 
 file = spark.read.csv(file_path, header=True, inferSchema=True)
 file = file.filter(file.Identifier.isNotNull())
@@ -51,117 +51,117 @@ file= file.withColumn('batch_date', lit(batch_id))\
     .withColumn('update_user',lit(system_user))
 
 file.show()
+
+url = 'jdbc:snowflake://oborokf-kh65378.snowflakecomputing.com/?user=KSREENIVASULU&password=Dharmavaram1@&warehouse=COMPUTE_WH&db=SAMPLE&schema=CONTACT_INFO'
+
+file.write.mode("overwrite") \
+    .format("jdbc") \
+    .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
+    .option("url", url) \
+    .option("dbtable", "ETL_AUTO.CONTACT_INFO.CONTACT_INFO_RAW") \
+    .save()
+
+
+file.createOrReplaceTempView("file")
+
+contact_info_bronze = spark.sql(
+    """ select
+    cast(Identifier as decimal(10)) Identifier,
+    upper(Surname) Surname,
+    upper(given_name) given_name,
+    middle_initial,
+    suffix,
+    Primary_street_number,
+    primary_street_name,
+    upper(city) city,
+    state,
+    zipcode,
+    Primary_street_number_prev,
+    primary_street_name_prev,
+    city_prev,
+    state_prev,
+    zipcode_prev,
+    Email,
+    translate(Phone,'+-','') phone,
+    rpad(birthmonth,8,'0') birthmonth
+    from file
+    """
+ )
+
+contact_info_bronze= contact_info_bronze.withColumn('batch_date', lit(batch_id))\
+    .withColumn('create_date', current_timestamp())\
+    .withColumn('update_date', current_timestamp())\
+    .withColumn('create_user',lit(system_user))\
+    .withColumn('update_user',lit(system_user))
+
+
+contact_info_bronze.write.mode("overwrite") \
+    .format("jdbc") \
+    .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
+    .option("url", url) \
+    .option("dbtable", "ETL_AUTO.CONTACT_INFO.CONTACT_INFO_BRONZE") \
+    .save()
+
+
+contact_info_bronze.createOrReplaceTempView("contact_info_bronze")
+
+contact_info_silver= spark.sql(
+        """
+        select
+        Identifier,
+        Surname,
+        given_name,
+        middle_initial,
+        Primary_street_number,
+        primary_street_name,
+        city,
+        state,
+        zipcode,
+        Email,
+        Phone,
+        birthmonth,
+        'Y' as Current_ind
+        from contact_info_bronze
+        union
+        select
+        Identifier,
+        Surname,
+        given_name,
+        middle_initial,
+        Primary_street_number_prev,
+        primary_street_name_prev,
+        city_prev,
+        state_prev,
+        zipcode_prev,
+        Email,
+        Phone,
+        birthmonth,
+        'N' as Current_ind
+        from contact_info_bronze
+        """)
+
+contact_info_silver=contact_info_silver.withColumn('batch_date', lit(batch_id))\
+    .withColumn('create_date', current_timestamp())\
+    .withColumn('update_date', current_timestamp())\
+    .withColumn('create_user',lit(system_user))\
+    .withColumn('update_user',lit(system_user))
+
+
+
+
+# #load data to snowflake
 #
-# url = 'jdbc:snowflake://oborokf-kh65378.snowflakecomputing.com/?user=KSREENIVASULU&password=Dharmavaram1@&warehouse=COMPUTE_WH&db=SAMPLE&schema=CONTACT_INFO'
-#
-# file.write.mode("overwrite") \
-#     .format("jdbc") \
-#     .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
-#     .option("url", url) \
-#     .option("dbtable", "ETL_AUTO.CONTACT_INFO.CONTACT_INFO_RAW") \
-#     .save()
-#
-#
-# file.createOrReplaceTempView("file")
-#
-# contact_info_bronze = spark.sql(
-#     """ select
-#     cast(Identifier as decimal(10)) Identifier,
-#     upper(Surname) Surname,
-#     upper(given_name) given_name,
-#     middle_initial,
-#     suffix,
-#     Primary_street_number,
-#     primary_street_name,
-#     upper(city) city,
-#     state,
-#     zipcode,
-#     Primary_street_number_prev,
-#     primary_street_name_prev,
-#     city_prev,
-#     state_prev,
-#     zipcode_prev,
-#     Email,
-#     translate(Phone,'+-','') phone,
-#     rpad(birthmonth,8,'0') birthmonth
-#     from file
-#     """
-#  )
-#
-# contact_info_bronze= contact_info_bronze.withColumn('batch_date', lit(batch_id))\
-#     .withColumn('create_date', current_timestamp())\
-#     .withColumn('update_date', current_timestamp())\
-#     .withColumn('create_user',lit(system_user))\
-#     .withColumn('update_user',lit(system_user))
-#
-#
-# contact_info_bronze.write.mode("overwrite") \
-#     .format("jdbc") \
-#     .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
-#     .option("url", url) \
-#     .option("dbtable", "ETL_AUTO.CONTACT_INFO.CONTACT_INFO_BRONZE") \
-#     .save()
-#
-#
-# contact_info_bronze.createOrReplaceTempView("contact_info_bronze")
-#
-# contact_info_silver= spark.sql(
-#         """
-#         select
-#         Identifier,
-#         Surname,
-#         given_name,
-#         middle_initial,
-#         Primary_street_number,
-#         primary_street_name,
-#         city,
-#         state,
-#         zipcode,
-#         Email,
-#         Phone,
-#         birthmonth,
-#         'Y' as Current_ind
-#         from contact_info_bronze
-#         union
-#         select
-#         Identifier,
-#         Surname,
-#         given_name,
-#         middle_initial,
-#         Primary_street_number_prev,
-#         primary_street_name_prev,
-#         city_prev,
-#         state_prev,
-#         zipcode_prev,
-#         Email,
-#         Phone,
-#         birthmonth,
-#         'N' as Current_ind
-#         from contact_info_bronze
-#         """)
-#
-# contact_info_silver=contact_info_silver.withColumn('batch_date', lit(batch_id))\
-#     .withColumn('create_date', current_timestamp())\
-#     .withColumn('update_date', current_timestamp())\
-#     .withColumn('create_user',lit(system_user))\
-#     .withColumn('update_user',lit(system_user))
-#
-#
-#
-#
-# # #load data to snowflake
-# #
-#
-#
-#
-#
-#
-# contact_info_silver.write.mode("overwrite") \
-#     .format("jdbc") \
-#     .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
-#     .option("url", url) \
-#     .option("dbtable", "ETL_AUTO.CONTACT_INFO.CONTACT_INFO_SILVER") \
-#     .save()
-#
-# spark.stop()
-#
+
+
+
+
+
+contact_info_silver.write.mode("overwrite") \
+    .format("jdbc") \
+    .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
+    .option("url", url) \
+    .option("dbtable", "ETL_AUTO.CONTACT_INFO.CONTACT_INFO_SILVER") \
+    .save()
+
+spark.stop()
+

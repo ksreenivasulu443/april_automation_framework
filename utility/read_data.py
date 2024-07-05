@@ -96,7 +96,8 @@ def read_snowflake(spark,
             query: str, row):
     try:
         config_data = read_config(database)
-        if query != 'NOT APPL':
+        sql_query = fetch_transformation_query_path(query)
+        if sql_query != 'NOT APPL':
             with open(query, "r") as file:
                 sql_query = file.read()
             print(sql_query)

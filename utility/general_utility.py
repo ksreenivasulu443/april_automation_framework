@@ -34,8 +34,10 @@ def read_config(database):
 
 def fetch_transformation_query_path(file_path):
     path = os.path.dirname(given_path) + '/transformation_queries/' + file_path
+    print("transformation_query_path",path)
     with open(path, "r") as file:
         sql_query = file.read()
+
     return sql_query
 
 #print("query", fetch_transformation_query_path('test.sql'))

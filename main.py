@@ -62,11 +62,6 @@ print(validations)
 
 for row in validations:
     print("row", row)
-    print("source type", row['source_type'])
-    print("source", row['source'])
-    print("target type", row['target_type'])
-    print("target", row['target'])
-    print("source_schema_path", row['source_schema_path'])
     if row['source_type'] == 'table':
         source = read_db(spark=spark,
                          table=row['source'],

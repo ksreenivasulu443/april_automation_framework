@@ -8,7 +8,8 @@ from pyspark.sql.functions import explode_outer, concat, col, \
     trim,to_date, lpad, lit, count,max, min, explode, current_timestamp
 from pyspark.sql import SparkSession
 import getpass
-from utility.general_utility import fetch_file_path
+from utility.general_utility import fetch_file_path, read_config
+
 os.environ.setdefault("project_path", os.getcwd())
 project_path = os.environ.get("project_path")
 
@@ -53,8 +54,7 @@ file= file.withColumn('batch_date', lit(batch_id))\
 
 file.show()
 
-url = 'jdbc:snowflake://oborokf-kh65378.snowflakecomputing.com/?user=KSREENIVASULU&password=Dharmavaram1@&warehouse=COMPUTE_WH&db=SAMPLE&schema=CONTACT_INFO'
-
+url = 'jdbc:snowflake://xlylevt-mq75647.snowflakecomputing.com/?user=ABDULSAMAD28290&password=Dharmavaram1@&warehouse=COMPUTE_WH&db=SAMPLE&schema=CONTACT_INFO'
 file.write.mode("overwrite") \
     .format("jdbc") \
     .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
@@ -164,5 +164,12 @@ contact_info_silver.write.mode("overwrite") \
     .option("dbtable", "ETL_AUTO.CONTACT_INFO.CONTACT_INFO_SILVER") \
     .save()
 
-spark.stop()
+config_data = read_config('snowflake_db')
+df = spark.read \
+    .format("jdbc") \
+    .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
+    .option("url", config_data['jdbc_url']) \
+    .option("dbtable", 'ETL_AUTO.CONTACT_INFO.CONTACT_INFO_RAW') \
+    .load()
 
+df.show()

@@ -1,4 +1,3 @@
-print("execution started in github")
 import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import collect_set

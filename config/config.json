@@ -7,7 +7,7 @@
   },
   "snowflake_db": {
     "driver": "net.snowflake.client.jdbc.SnowflakeDriver",
-    "jdbc_url" : "jdbc:snowflake://oborokf-kh65378.snowflakecomputing.com/?user=KSREENIVASULU&password=Dharmavaram1@&warehouse=COMPUTE_WH&db=ETL_AUTO&schema=CONTACT_INFO"
+    "jdbc_url" : "jdbc:snowflake://xlylevt-mq75647.snowflakecomputing.com/?user=ABDULSAMAD28290&password=Dharmavaram1@&warehouse=COMPUTE_WH&db=SAMPLE&schema=CONTACT_INFO"
 
   }
 }

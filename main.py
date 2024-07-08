@@ -39,7 +39,7 @@ Out = {
 }
 
 print("project_path", project_path)
-template_path = project_path + '\\config\\master_test_template_project1.xlsx'
+template_path = project_path + '/config/master_test_template_project1.xlsx'
 print(template_path)
 
 test_cases = pd.read_excel(template_path)

@@ -26,7 +26,7 @@ def fetch_file_path(file_name):
     return path
 
 def read_config(database):
-    parent_path = os.path.dirname(given_path) + '/config/Config.json'
+    parent_path = os.path.dirname(given_path) + '/config/config.json'
     # Read the JSON configuration file
     with open(parent_path) as f:
         config = json.load(f)[database]

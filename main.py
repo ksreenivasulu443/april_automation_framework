@@ -155,7 +155,7 @@ summary = spark.createDataFrame(summary, schema=schema)
 
 config_data = read_config('snowflake_db')
 
-summary.write.mode("overwrite") \
+summary.write.mode("append") \
     .format("jdbc") \
     .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
     .option("url", config_data['jdbc_url']) \

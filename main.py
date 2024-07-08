@@ -2,6 +2,8 @@ import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import collect_set
 import os
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+from utility.general_utility import read_config
 
 from utility.read_data import read_file, read_db, read_snowflake
 from utility.validation_library import count_check, duplicate_check, records_present_only_in_source, \
@@ -132,3 +134,30 @@ summary = pd.DataFrame(Out)
 print(summary)
 
 summary.to_csv("summary.csv")
+
+summary.to_csv("summary.csv")
+# summary['bathc_id'] = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+schema = StructType([
+    StructField("validation_Type", StringType(), True),
+    StructField("Source_name", StringType(), True),
+    StructField("target_name", StringType(), True),
+    StructField("Number_of_source_Records", StringType(), True),
+    StructField("Number_of_target_Records", StringType(), True),
+    StructField("Number_of_failed_Records", StringType(), True),
+    StructField("column", StringType(), True),
+    StructField("Status", StringType(), True),
+    StructField("source_type", StringType(), True),
+    StructField("target_type", StringType(), True)
+])
+
+# Convert Pandas DataFrame to Spark DataFrame
+summary = spark.createDataFrame(summary, schema=schema)
+
+config_data = read_config('snowflake_db')
+
+summary.write.mode("overwrite") \
+    .format("jdbc") \
+    .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
+    .option("url", config_data['jdbc_url']) \
+    .option("dbtable", "ETL_AUTO.CONTACT_INFO.summary") \
+    .save()

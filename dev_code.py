@@ -164,12 +164,12 @@ contact_info_silver.write.mode("overwrite") \
     .option("dbtable", "ETL_AUTO.CONTACT_INFO.CONTACT_INFO_SILVER") \
     .save()
 
-config_data = read_config('snowflake_db')
-df = spark.read \
-    .format("jdbc") \
-    .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
-    .option("url", config_data['jdbc_url']) \
-    .option("dbtable", 'ETL_AUTO.CONTACT_INFO.CONTACT_INFO_RAW') \
-    .load()
-
-df.show()
+# config_data = read_config('snowflake_db')
+# df = spark.read \
+#     .format("jdbc") \
+#     .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
+#     .option("url", config_data['jdbc_url']) \
+#     .option("dbtable", 'ETL_AUTO.CONTACT_INFO.CONTACT_INFO_RAW') \
+#     .load()
+#
+# df.show()

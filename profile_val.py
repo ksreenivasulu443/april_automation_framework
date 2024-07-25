@@ -152,6 +152,8 @@ schema = StructType([
     StructField("target_type", StringType(), True)
 ])
 
+# this test line
+
 # Convert Pandas DataFrame to Spark DataFrame
 summary = spark.createDataFrame(summary, schema=schema)
 

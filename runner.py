@@ -39,7 +39,7 @@ Out = {
 }
 
 print("project_path", project_path)
-template_path = project_path + '/config/Master_Test_profile.xlsx'
+template_path = project_path + '/config/Master_Test_Template_project1.xlsx'
 print(template_path)
 
 test_cases = pd.read_excel(template_path)
@@ -152,8 +152,6 @@ schema = StructType([
     StructField("target_type", StringType(), True)
 ])
 
-# this test line
-
 # Convert Pandas DataFrame to Spark DataFrame
 summary = spark.createDataFrame(summary, schema=schema)
 
@@ -163,5 +161,5 @@ summary.write.mode("append") \
     .format("jdbc") \
     .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
     .option("url", config_data['jdbc_url']) \
-    .option("dbtable", "ETL_AUTO.CONTACT_INFO.summary") \
+    .option("dbtable", "ETL_AUTO.CONTACT_INFO.CONTACT_INFO") \
     .save()

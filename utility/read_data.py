@@ -127,3 +127,5 @@ def read_snowflake(spark,
         print(f"An error occurred: {e}")
         return None
 
+
+

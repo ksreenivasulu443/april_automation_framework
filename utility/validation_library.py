@@ -127,6 +127,9 @@ def records_present_only_in_source(source, target, keyList, Out, row):
                      source_type=row['source_type'],
                      target_type=row['target_type'], Out=Out)
 
+
+
+
 def null_value_check(target, Null_columns, Out, row):
     target_count = target.count()
     Null_columns = Null_columns.split(",")

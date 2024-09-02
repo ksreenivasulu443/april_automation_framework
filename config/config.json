@@ -1,11 +1,34 @@
 {
-  "postgres_db": {
+  "postgres_db_dev": {
     "url": "jdbc:postgresql://localhost:5432/postgres",
     "user": "postgres",
     "password": "Dharmavaram1@",
     "driver": "org.postgresql.Driver"
   },
-  "snowflake_db": {
+  "postgres_db_qa": {
+    "url": "jdbc:postgresql://localhost:5432/postgres",
+    "user": "postgres",
+    "password": "Dharmavaram1@",
+    "driver": "org.postgresql.Driver"
+  },
+  "postgres_db_uat": {
+    "url": "jdbc:postgresql://localhost:5432/postgres",
+    "user": "postgres",
+    "password": "Dharmavaram1@",
+    "driver": "org.postgresql.Driver"
+  },
+  "postgres_db_prod": {
+    "url": "jdbc:postgresql://localhost:5432/postgres",
+    "user": "postgres",
+    "password": "Dharmavaram1@",
+    "driver": "org.postgresql.Driver"
+  },
+  "snowflake_db_dev": {
+    "driver": "net.snowflake.client.jdbc.SnowflakeDriver",
+    "jdbc_url" : "jdbc:snowflake://xlylevt-mq75647.snowflakecomputing.com/?user=ABDULSAMAD28290&password=Dharmavaram1@&warehouse=COMPUTE_WH&db=SAMPLE&schema=CONTACT_INFO"
+
+  },
+   "snowflake_db_qa": {
     "driver": "net.snowflake.client.jdbc.SnowflakeDriver",
     "jdbc_url" : "jdbc:snowflake://xlylevt-mq75647.snowflakecomputing.com/?user=ABDULSAMAD28290&password=Dharmavaram1@&warehouse=COMPUTE_WH&db=SAMPLE&schema=CONTACT_INFO"
 

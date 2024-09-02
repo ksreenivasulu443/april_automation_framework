@@ -48,4 +48,4 @@ jobs:
     - name: Execute dev code
       run: python dev_code.py
     - name: Execute automation code
-      run: python main.py
+      run: python runner.py

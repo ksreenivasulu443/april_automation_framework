@@ -2,6 +2,7 @@ import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import collect_set,lit
 import os
+import sys
 import getpass
 import datetime
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
@@ -17,6 +18,19 @@ postgre_jar = project_path + "/jars/postgresql-42.2.5.jar"
 
 snow_jar = project_path + "/jars/snowflake-jdbc-3.14.3.jar"
 #oracle_jar = project_path + "/jars/ojdbc11.jar"
+cwd = os.getcwd()
+# user = os.environ.get('USER')
+# print(user)
+result_local_file = cwd+'\Execution_detailed_summary.txt'
+print("result_local_file",result_local_file)
+
+if os.path.exists(result_local_file):
+    os.remove(result_local_file)
+
+file = open(result_local_file, 'a')
+original = sys.stdout
+sys.stdout = file
+
 
 jar_path = snow_jar
 

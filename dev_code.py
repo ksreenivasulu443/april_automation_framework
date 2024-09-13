@@ -13,6 +13,18 @@ from utility.general_utility import fetch_file_path, read_config
 os.environ.setdefault("project_path", os.getcwd())
 project_path = os.environ.get("project_path")
 
+cwd = os.getcwd()
+# user = os.environ.get('USER')
+# print(user)
+result_local_file = cwd+'\Execution_detailed_summary.txt'
+print("result_local_file",result_local_file)
+
+if os.path.exists(result_local_file):
+    os.remove(result_local_file)
+
+file = open(result_local_file, 'a')
+original = sys.stdout
+sys.stdout = file
 
 # jar_path = pkg_resources.resource_filename('jars', 'postgresql-42.2.5.jar')
 #postgre_jar = project_path + "/jars/postgresql-42.2.5.jar"

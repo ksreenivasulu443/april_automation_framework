@@ -34,7 +34,7 @@ def generate_test_data():
 
 
 # Prompt user for the number of records
-num_records = 100
+num_records = 15
 
 # Generate and store test data in CSV file
 file_name = f"contact_info_{datetime.now().strftime('%Y%m%d')}.csv"

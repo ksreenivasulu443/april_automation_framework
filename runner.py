@@ -1,6 +1,6 @@
 import pandas as pd
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import collect_set
+from pyspark.sql.functions import collect_set,lit
 import os
 import getpass
 import datetime

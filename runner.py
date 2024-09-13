@@ -2,6 +2,7 @@ import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import collect_set
 import os
+import getpass
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 from utility.general_utility import read_config
 
@@ -155,9 +156,18 @@ schema = StructType([
 # Convert Pandas DataFrame to Spark DataFrame
 summary = spark.createDataFrame(summary, schema=schema)
 
+system_user = getpass.getuser()
+
+batch_id = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
+
+
+summary = summary.withColumn('batch_id',lit(batch_id))
 config_data = read_config('snowflake_db')
 
-summary.write.mode("append") \
+
+
+summary.write.mode("overwrite") \
     .format("jdbc") \
     .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
     .option("url", config_data['jdbc_url']) \

@@ -49,3 +49,5 @@ jobs:
       run: python dev_code.py
     - name: Execute automation code
       run: python runner.py
+#    - name: Execute automation code
+#      run: python data_quality.py

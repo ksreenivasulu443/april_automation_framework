@@ -161,5 +161,5 @@ summary.write.mode("append") \
     .format("jdbc") \
     .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
     .option("url", config_data['jdbc_url']) \
-    .option("dbtable", "ETL_AUTO.CONTACT_INFO.CONTACT_INFO") \
+    .option("dbtable", "SAMPLEDB.CONTACT_INFO.SUMMARY") \
     .save()

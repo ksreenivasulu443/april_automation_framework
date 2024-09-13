@@ -37,7 +37,7 @@ batch_id = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
 # Load from File to DB raw table
 
-file_path = fetch_file_path('contact_info_20240709.csv')
+file_path = fetch_file_path('contact_info_20240913.csv')
 
 file = spark.read.csv(file_path, header=True, inferSchema=True)
 file = file.filter(file.Identifier.isNotNull())
@@ -54,12 +54,12 @@ file= file.withColumn('batch_date', lit(batch_id))\
 
 file.show()
 
-url = 'jdbc:snowflake://xlylevt-mq75647.snowflakecomputing.com/?user=ABDULSAMAD28290&password=Dharmavaram1@&warehouse=COMPUTE_WH&db=SAMPLE&schema=CONTACT_INFO'
+url =  "jdbc:snowflake://epizybn-qo01792.snowflakecomputing.com/?user=KSREENIVASULU443&password=Dharmavaram1@&warehouse=COMPUTE_WH&db=SAMPLEDB&schema=CONTACT_INFO"
 file.write.mode("overwrite") \
     .format("jdbc") \
     .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
     .option("url", url) \
-    .option("dbtable", "ETL_AUTO.CONTACT_INFO.CONTACT_INFO_RAW") \
+    .option("dbtable", "SAMPLEDB.CONTACT_INFO.CONTACT_INFO_RAW") \
     .save()
 
 
@@ -100,7 +100,7 @@ contact_info_bronze.write.mode("overwrite") \
     .format("jdbc") \
     .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
     .option("url", url) \
-    .option("dbtable", "ETL_AUTO.CONTACT_INFO.CONTACT_INFO_BRONZE") \
+    .option("dbtable", "SAMPLEDB.CONTACT_INFO.CONTACT_INFO_BRONZE") \
     .save()
 
 
@@ -161,7 +161,7 @@ contact_info_silver.write.mode("overwrite") \
     .format("jdbc") \
     .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver") \
     .option("url", url) \
-    .option("dbtable", "ETL_AUTO.CONTACT_INFO.CONTACT_INFO_SILVER") \
+    .option("dbtable", "SAMPLEDB.CONTACT_INFO.CONTACT_INFO_SILVER") \
     .save()
 
 # config_data = read_config('snowflake_db')

@@ -23,4 +23,4 @@ SELECT
     "create_user",
     "update_user"
 FROM
-     ETL_AUTO.CONTACT_INFO.contact_info_raw
+     SAMPLEDB.CONTACT_INFO.contact_info_raw

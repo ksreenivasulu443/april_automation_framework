@@ -32,5 +32,10 @@
     "driver": "net.snowflake.client.jdbc.SnowflakeDriver",
     "jdbc_url" : "jdbc:snowflake://xlylevt-mq75647.snowflakecomputing.com/?user=ABDULSAMAD28290&password=Dharmavaram1@&warehouse=COMPUTE_WH&db=SAMPLE&schema=CONTACT_INFO"
 
+  },
+  "snowflake_db": {
+    "driver": "net.snowflake.client.jdbc.SnowflakeDriver",
+    "jdbc_url" : "jdbc:snowflake://epizybn-qo01792.snowflakecomputing.com/?user=KSREENIVASULU443&password=Dharmavaram1@&warehouse=COMPUTE_WH&db=SAMPLEDB&schema=CONTACT_INFO"
+
   }
 }
